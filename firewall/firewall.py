@@ -1,5 +1,5 @@
 # flask_app.py
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, stream_with_context
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -10,7 +10,8 @@ import pandas as pd
 import sqlite3
 import random
 import datetime
-
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
 
 
 DB_FILE = "firewall_logs.db"
@@ -47,6 +48,10 @@ dataset = pd.read_csv("dataset/SQLInjection_XSS_MixDataset.1.0.0.csv")  # Ensure
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
+
+app.config['SECRET_KEY'] = 'abcd'
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 FIREWALL_ENABLED= True
 # Define regex patterns for SQL Injection and XSS
@@ -91,6 +96,19 @@ def dataset_check(query):
     return None  # If no match is found in the dataset
 
 
+# WebSocket event to notify clients of a new detection
+def notify_clients(attack_type, query):
+    time_detected = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    layer = random.choice(["GANs", "Regex"]) if FIREWALL_ENABLED else "Firewall Off"
+    
+    # Emit a WebSocket event to all connected clients
+    socketio.emit('new_detection', {
+        'payload': query,
+        'attack_type': attack_type,
+        'time_detected': time_detected,
+        'layer': layer
+    })
+
 # Logging function
 '''def log_attack(attack_type, query):
     with open("firewall_logs.txt", "a") as log_file:
@@ -115,6 +133,7 @@ def log_attack(attack_type, query):
                    (query, attack_type, time_detected, layer))
     conn.commit()
     conn.close()
+    notify_clients(attack_type, query)
 
 
 @app.route("/detect", methods=["POST"])
@@ -171,7 +190,51 @@ def toggle_firewall():
     FIREWALL_ENABLED = bool(data["enabled"])
     status = "ON" if FIREWALL_ENABLED else "OFF"
     
-    return jsonify({"message": f"Firewall is now {status}."})
+    return jsonify({"message": f"Firewall is now {status}.", "status": FIREWALL_ENABLED})
+
+
+# Endpoint to get current firewall status
+@app.route("/firewall-status", methods=["GET"])
+def get_firewall_status():
+    global FIREWALL_ENABLED
+    return jsonify({"status": FIREWALL_ENABLED})
+
+
+
+
+
+# Endpoint to fetch logs
+@app.route("/logs", methods=["GET"])
+def get_logs():
+    try:
+        # Connect to the SQLite database
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+
+        # Fetch all logs from the database, ordered by time_detected (newest first)
+        cursor.execute("SELECT * FROM logs ORDER BY time_detected DESC")
+        logs = cursor.fetchall()
+
+        # Close the database connection
+        conn.close()
+
+        # Convert logs to a list of dictionaries
+        logs_list = []
+        for log in logs:
+            logs_list.append({
+                "id": log[0],
+                "payload": log[1],
+                "attack_type": log[2],
+                "time_detected": log[3],
+                "layer": log[4]
+            })
+
+        # Return the logs as a JSON response
+        return jsonify(logs_list)
+
+    except Exception as e:
+        # Handle any errors
+        return jsonify({"error": str(e)}), 500
 
 
 
