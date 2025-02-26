@@ -48,6 +48,7 @@ dataset = pd.read_csv("dataset/SQLInjection_XSS_MixDataset.1.0.0.csv")  # Ensure
 # Initialize Flask app
 app = Flask(__name__)
 
+FIREWALL_ENABLED= True
 # Define regex patterns for SQL Injection and XSS
 SQLI_PATTERNS = [
     r"(?i)(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bALTER\b|\bCREATE\b|\bEXEC\b|\bOR\b\s*\d+=\d+)",
@@ -100,7 +101,10 @@ def log_attack(attack_type, query):
     
 
     time_detected = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    layer = random.choice(["GANs", "Regex"])  # Randomly assign layer
+    if not FIREWALL_ENABLED:
+        layer="Firewall Off"
+    else:
+        layer = random.choice(["GANs", "Regex"])  # Randomly assign layer
 
     with open("firewall_logs.txt", "a") as log_file:
         log_file.write(f"Attack Type: {attack_type} | Payload: {query}| Time: {time_detected}| Layer: {layer}\n")
@@ -115,11 +119,19 @@ def log_attack(attack_type, query):
 
 @app.route("/detect", methods=["POST"])
 def detect_attack():
+    global FIREWALL_ENABLED
+
     data = request.json
     if not data or "sentence" not in data:
         return jsonify({"error": "Invalid request. Provide 'sentence' in JSON."}), 400
 
     query = data.get("sentence", "")
+
+    if not FIREWALL_ENABLED:
+        attack_type = "Normal Request"
+        
+        log_attack(attack_type, query)  # Log the request even when firewall is OFF
+        return jsonify({"sentence": query, "detection": attack_type})  # Firewall is OFF
 
     # Step 1: Check with regex patterns
     result = regex_check(query)
@@ -137,14 +149,31 @@ def detect_attack():
 
     # Step 4: Use discriminator model for classification
     prediction = discriminator.predict(padded_sequence)
-    attack_labels = ["SQL Injection", "XSS Attack", "Normal Request"]
-    attack_type = attack_labels[np.argmax(prediction)]  # Get the most probable attack type
 
-    # Log if it's an attack
-    if attack_type != "Normal Request":
-        log_attack(attack_type, query)
+    # Get the most probable attack type
+    attack_labels = ["SQL Injection", "XSS Attack", "Normal Request"]
+    attack_type = attack_labels[np.argmax(prediction)]  
+
+    
+    log_attack(attack_type, query)
 
     return jsonify({"sentence": query, "detection": attack_type})
+
+
+@app.route("/toggle-firewall", methods=["POST"])
+def toggle_firewall():
+    global FIREWALL_ENABLED
+    data = request.json
+
+    if "enabled" not in data:
+        return jsonify({"error": "Missing 'enabled' key in JSON request."}), 400
+
+    FIREWALL_ENABLED = bool(data["enabled"])
+    status = "ON" if FIREWALL_ENABLED else "OFF"
+    
+    return jsonify({"message": f"Firewall is now {status}."})
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
