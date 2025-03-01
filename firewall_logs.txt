@@ -25,3 +25,11 @@ Attack Type: XSS Attack | Payload: what=cs&search_word="><script>alert(document.
 Attack Type: XSS Attack | Payload: what=cs&search_word="><script>alert(document.cookie)| Time: 2025-02-27 02:32:00| Layer: Regex
 Attack Type: Normal Request | Payload: what=cs&search_word="><script>alert(document.cookie)| Time: 2025-02-27 02:47:21| Layer: Firewall Off
 Attack Type: XSS Attack | Payload: what=cs&search_word="><script>alert(document.cookie)| Time: 2025-02-27 02:47:30| Layer: Regex
+Attack Type: XSS Attack | Payload: Field=Title&BigClassName=%3Cscript%3Ealert(%22XSS%22)%3C/<br/>script%3E&SmallClassName=&keyword=xss&Submit=%CB%D1%CB%F7| Time: 2025-02-28 21:19:44| Layer: Regex
+Attack Type: XSS Attack | Payload: Field=Title&BigClassName=%3Cscript%3Ealert(%22XSS%22)%3C/<br/>script%3E&SmallClassName=&keyword=xss&Submit=%CB%D1%CB%F7| Time: 2025-02-28 21:19:57| Layer: Regex
+Attack Type: XSS Attack | Payload: job=%3Cscript%3Ealert(%22XSS%22)%3C/script%3E| Time: 2025-02-28 21:21:16| Layer: Regex
+Attack Type: XSS Attack | Payload: job=%3Cscript%3Ealert(%22XSS%22)%3C/script%3E| Time: 2025-02-28 21:21:36| Layer: GANs
+Attack Type: Normal Request | Payload: job=%3Cscript%3Ealert(%22XSS%22)%3C/script%3E| Time: 2025-02-28 21:22:29| Layer: Firewall Off
+Attack Type: XSS Attack | Payload: job=%3Cscript%3Ealert(%22XSS%22)%3C/script%3E| Time: 2025-02-28 21:22:49| Layer: Regex
+Attack Type: XSS Attack | Payload: job=%3Cscript%3Ealert(%22XSS%22)%3C/script%3E| Time: 2025-02-28 21:24:20| Layer: Regex
+Attack Type: XSS Attack | Payload: job=%3Cscript%3Ealert(%22XSS%22)%3C/script%3E| Time: 2025-02-28 21:24:44| Layer: GANs
