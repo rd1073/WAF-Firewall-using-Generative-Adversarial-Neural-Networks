@@ -6,6 +6,7 @@ import DetectionForm from '../src/components/DetectionForm';
 import Alert from 'react-bootstrap/Alert';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { io } from 'socket.io-client';
+import Imagee from './components/Image';
 
 function App() {
   const [logs, setLogs] = useState([]);
@@ -91,7 +92,10 @@ function App() {
     </div>
       <DetectionForm firewallStatus={firewallStatus} />
       <LogsDisplay logs={logs} />
+
+      <Imagee />
     </div>
+  
   );
 }
 

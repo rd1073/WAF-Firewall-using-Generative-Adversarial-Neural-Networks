@@ -36,15 +36,15 @@ init_db()
 
 
 # Load the tokenizer
-with open("models/tokenizer.pkl", "rb") as f:
+with open("C:/Users/rajes/OneDrive/Desktop/gans_firewall/model/models/tokenizer.pkl", "rb") as f:
     tokenizer = pickle.load(f)
 
 # Load the discriminator and generator models
-discriminator = load_model("models/discriminator.h5")
-generator = load_model("models/generator.h5")
+discriminator = load_model("C:/Users/rajes/OneDrive/Desktop/gans_firewall/model/models/discriminator.h5")
+generator = load_model("C:/Users/rajes/OneDrive/Desktop/gans_firewall/model/models/generator.h5")
 
 # Load the dataset of known attacks
-dataset = pd.read_csv("dataset/SQLInjection_XSS_MixDataset.1.0.0.csv")  # Ensure this dataset exists
+dataset = pd.read_csv("C:/Users/rajes/OneDrive/Desktop/gans_firewall/dataset/SQLInjection_XSS_MixDataset.1.0.0.csv")  # Ensure this dataset exists
 
 # Initialize Flask app
 app = Flask(__name__)

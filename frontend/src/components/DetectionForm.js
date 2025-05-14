@@ -20,7 +20,7 @@ function DetectionForm({ firewallStatus }) {
 
   return (
     <div className="mt-4">
-      <h2>Firewall Detection</h2>
+      {/* <h2>Firewall Detection</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="sentence">
           <Form.Label>Enter a sentence to detect:</Form.Label>
@@ -34,7 +34,7 @@ function DetectionForm({ firewallStatus }) {
         <Button variant="primary" type="submit" disabled={!firewallStatus}>
           Detect
         </Button>
-      </Form>
+      </Form> */}
       {detectionResult && (
         <Alert variant={detectionResult === 'Normal Request' ? 'success' : 'danger'} className="mt-3">
           Detection Result: {detectionResult}

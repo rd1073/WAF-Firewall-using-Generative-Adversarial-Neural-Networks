@@ -39,7 +39,7 @@ def preprocess_dataset(file_path):
         return None
 
 # Load and clean dataset
-data = preprocess_dataset("dataset/SQLInjection_XSS_MixDataset.1.0.0.csv")
+data = preprocess_dataset("C:/Users/rajes/OneDrive/Desktop/gans_firewall/dataset/SQLInjection_XSS_MixDataset.1.0.0.csv")
 if data is None:
     exit()
 

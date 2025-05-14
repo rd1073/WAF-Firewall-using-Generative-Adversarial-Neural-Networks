@@ -4,7 +4,7 @@ import requests
 import json
 
 # Load Dataset
-data = pd.read_csv("dataset/SQLInjection_XSS_MixDataset.1.0.0.csv")  # Replace with your actual dataset filename
+data = pd.read_csv("C:/Users/rajes/OneDrive/Desktop/gans_firewall/dataset/SQLInjection_XSS_MixDataset.1.0.0.csv")  # Replace with your actual dataset filename
 
 # Pick a random row
 #random_entry = data.sample(n=1).iloc[0]
@@ -40,3 +40,11 @@ print("Firewall Response:", response.json())
 
 print("\nGenerated JSON Request:")
 print(json_string)
+
+
+curl_command = f"""curl --location --request POST '{firewall_url}' \
+--header 'Content-Type: application/json' \
+--data-raw '{json_string}'"""
+
+
+print(curl_command)

